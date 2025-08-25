@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "hugging-face-chat-ui.fullname" . }}
+  labels:
+    {{- include "hugging-face-chat-ui.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "hugging-face-chat-ui.selectorLabels" . | nindent 4 }}

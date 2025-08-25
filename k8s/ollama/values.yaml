@@ -1,0 +1,96 @@
+
+replicaCount: 1
+
+image:
+  repository: nginx
+  pullPolicy: IfNotPresent
+  tag: ""
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: false
+  automount: false
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+resources: 
+  limits:
+    cpu: 3000m
+    memory: 8000Mi
+  requests:
+    cpu: 3000m
+    memory: 8000Mi
+
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+volumes:
+  - name: volume
+    persistentVolumeClaim:
+      claimName: ollama-data
+
+pvc:
+  name: ollama-data
+  size: 20Gi
+
+# Additional volumeMounts on the output Deployment definition.
+volumeMounts: 
+- name: volume
+  mountPath: "/root/.ollama"
+  readOnly: false
+
+nodeSelector: {}
+
+tolerations: 
+- key: "sku"
+  operator: "Equal"
+  value: "gpu"
+  effect: "NoSchedule"
+
+affinity: {}

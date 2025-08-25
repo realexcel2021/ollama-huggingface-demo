@@ -1,0 +1,39 @@
+services:
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    #command: '--gpu all'
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+    networks:
+      - ollama_net
+    deploy:
+      resources:
+        limits:
+          memory: 10G
+          cpus: '8.0'
+
+  hugging-face-chat:
+    image: ghcr.io/huggingface/chat-ui-db
+    container_name: hugging-face-chat
+    ports:
+      - "3000:3000"
+    volumes:
+      - huggingface_data:/data
+    env_file:
+      - .env
+    depends_on:
+      - ollama
+    networks:
+      - ollama_net
+
+networks:
+  ollama_net:
+
+volumes:
+  ollama_data:
+  huggingface_data:

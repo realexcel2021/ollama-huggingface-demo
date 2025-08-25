@@ -1,0 +1,98 @@
+
+replicaCount: 1
+
+
+image:
+  repository: ghcr.io/huggingface/chat-ui-db
+  pullPolicy: IfNotPresent
+  tag: ""
+
+serviceAccount:
+  create: false
+  automount: true
+  annotations: {}
+  name: ""
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+resources: 
+  limits:
+    cpu: 1000m
+    memory: 512Mi
+  requests:
+    cpu: 1000m
+    memory: 512Mi
+
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+
+
+volumes:
+# - name: foo
+#   secret:
+#     secretName: mysecret
+#     optional: false
+  - name: volume
+    persistentVolumeClaim:
+      claimName: huggingface-data
+
+pvc:
+  name: huggingface-data
+  size: 3Gi
+
+# Additional volumeMounts on the output Deployment definition.
+volumeMounts: 
+- name: volume
+  mountPath: "/data"
+  readOnly: false
+
+env:
+  MODELS: |-
+    [
+      {
+      "name": "Ollama qwen2.5:0.5b",
+      "chatPromptTemplate": "{{#if system}}<|im_start|>system\n{{ system }}<|im_end|>\n{{/if}}\n{{#each messages}}\n  {{#ifUser}}<|im_start|>user\n{{ content }}<|im_end|>\n  {{/ifUser}}\n  {{#ifAssistant}}<|im_start|>assistant\n{{ content }}<|im_end|>\n  {{/ifAssistant}}\n{{/each}}\n<|im_start|>assistant",
+      "parameters": {
+        "temperature": 0.1,
+        "top_p": 0.95,
+        "repetition_penalty": 1.2,
+        "top_k": 50,
+        "truncate": 3072,
+        "max_new_tokens": 1024,
+        "stop": ["</s>"]
+      },
+      "endpoints": [
+        {
+         "type": "ollama",
+         "url" : "http://ollama:11434",
+         "ollamaName" : "qwen2.5:0.5b"
+        }
+      ]
+      }
+    ]
