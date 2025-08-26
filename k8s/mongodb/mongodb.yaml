@@ -1,0 +1,13 @@
+architecture: standalone
+useStatefulSet: true
+
+auth:
+  enabled: false
+  # rootPassword: "rootpassword1234"
+
+  # usernames:
+  #   - "huggingface"
+  # passwords:
+  #   - "huggingface1234"
+  # databases:
+  #   - "huggingface"

@@ -5,7 +5,7 @@ replicaCount: 1
 image:
   repository: ghcr.io/huggingface/chat-ui-db
   pullPolicy: IfNotPresent
-  tag: ""
+  tag: "latest"
 
 serviceAccount:
   create: false
@@ -14,8 +14,8 @@ serviceAccount:
   name: ""
 
 service:
-  type: ClusterIP
-  port: 80
+  type: LoadBalancer
+  port: 3000
 
 ingress:
   enabled: false
@@ -28,23 +28,23 @@ ingress:
           pathType: ImplementationSpecific
   tls: []
 
-resources: 
-  limits:
-    cpu: 1000m
-    memory: 512Mi
-  requests:
-    cpu: 1000m
-    memory: 512Mi
+# resources: 
+#   limits:
+#     cpu: 2000m
+#     memory: 3000Mi
+#   requests:
+#     cpu: 2000m
+#     memory: 3000Mi
 
 
-livenessProbe:
-  httpGet:
-    path: /
-    port: http
-readinessProbe:
-  httpGet:
-    path: /
-    port: http
+# livenessProbe:
+#   httpGet:
+#     path: /
+#     port: http
+# readinessProbe:
+#   httpGet:
+#     path: /
+#     port: http
 
 autoscaling:
   enabled: false
@@ -64,15 +64,18 @@ volumes:
 
 pvc:
   name: huggingface-data
-  size: 3Gi
+  size: 4Gi
 
 # Additional volumeMounts on the output Deployment definition.
 volumeMounts: 
 - name: volume
-  mountPath: "/data"
+  mountPath: "/data/db"
   readOnly: false
 
 env:
+  MONGODB_URL: "mongodb://mongodb:27017"
+  ALLOW_INSECURE_COOKIES: "true"
+  MONGODB_DB_NAME: "huggingface"
   MODELS: |-
     [
       {

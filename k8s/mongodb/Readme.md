@@ -1,0 +1,1 @@
+helm upgrade --install mongodb oci://registry-1.docker.io/bitnamicharts/mongodb --values mongodb.yaml

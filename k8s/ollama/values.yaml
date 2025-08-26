@@ -2,9 +2,9 @@
 replicaCount: 1
 
 image:
-  repository: nginx
+  repository: ollama/ollama
   pullPolicy: IfNotPresent
-  tag: ""
+  tag: "latest"
 
 nameOverride: ""
 fullnameOverride: ""
@@ -31,7 +31,7 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 80
+  port: 11434
 
 ingress:
   enabled: false
