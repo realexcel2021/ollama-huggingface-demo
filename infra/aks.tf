@@ -8,6 +8,10 @@ resource "azurerm_kubernetes_cluster" "k8s" {
     type = "SystemAssigned"
   }
 
+  web_app_routing {
+    dns_zone_ids = []
+  }
+
   default_node_pool {
     name       = "agentpool"
     vm_size    = "Standard_A4_v2"
